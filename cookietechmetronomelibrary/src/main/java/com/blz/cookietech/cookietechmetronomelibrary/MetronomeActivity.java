@@ -27,7 +27,7 @@ public class MetronomeActivity extends AppCompatActivity {
         final double[] doNote = audio.getSineWave(noteDuration/2, 8000, 523.25);
         final double[] reNote = audio.getSineWave(noteDuration/2, 8000, 587.33);
         final double[] faNote = audio.getSineWave(noteDuration, 8000, 698.46);
-        final double[] laNote = audio.getSineWave(noteDuration*10, 8000, 880.00);
+        final double[] laNote = audio.getSineWave(noteDuration, 8000, 880.00);
         final double[] laNote2 = audio.getSineWave((int) (noteDuration*1.25), 8000, 880.00);
         final double[] siNote = audio.getSineWave(noteDuration/2, 8000, 987.77);
         final double[] doNote2 = audio.getSineWave((int) (noteDuration*1.25), 8000, 523.25);
@@ -40,10 +40,8 @@ public class MetronomeActivity extends AppCompatActivity {
         play_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //metronome.playPublic();
-                audio.createPlayer();
-                audio.writeSound(laNote);
-                audio.writeSound(silence);
+                metronome.playPublic();
+                //audio.createPlayer();
                 /*audio.writeSound(doNote);
                 audio.writeSound(silence);
                 audio.writeSound(reNote);
@@ -104,8 +102,7 @@ public class MetronomeActivity extends AppCompatActivity {
                 audio.writeSound(silence);
                 audio.writeSound(reNote2);*/
 
-                audio.destroyAudioTrack();
-
+                /*audio.destroyAudioTrack();*/
             }
         });
 

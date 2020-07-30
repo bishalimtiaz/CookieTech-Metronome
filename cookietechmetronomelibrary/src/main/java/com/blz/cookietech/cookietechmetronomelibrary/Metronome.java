@@ -1,13 +1,13 @@
 package com.blz.cookietech.cookietechmetronomelibrary;
 
 public class Metronome {
-    private double bpm;
-    private int beat;
+    private double bpm = 120;
+    private int beat=4;
     private int noteValue;
     private int silence;
 
-    private double beatSound;
-    private double sound;
+    private double beatSound = 400;
+    private double sound = 300;
     private final int tick = 1000; // samples of tick
 
     private boolean play = true;
