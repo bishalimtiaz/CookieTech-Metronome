@@ -35,6 +35,8 @@ public class AudioGenerator {
         return generatedSound;
     }
 
+
+
     public void createPlayer(){
         audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
                 sampleRate, AudioFormat.CHANNEL_OUT_MONO,

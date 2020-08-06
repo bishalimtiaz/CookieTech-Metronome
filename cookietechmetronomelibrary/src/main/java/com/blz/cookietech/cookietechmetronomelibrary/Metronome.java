@@ -1,20 +1,22 @@
 package com.blz.cookietech.cookietechmetronomelibrary;
 
 public class Metronome {
-    private double bpm = 120;
+    private double bpm = 300;
     private int beat=4;
     private int noteValue;
     private int silence;
 
-    private double beatSound = 400;
-    private double sound = 300;
+    private double beatSound = 900;
+    private double sound = 1200;
     private final int tick = 1000; // samples of tick
 
     private boolean play = true;
     private AudioGenerator audioGenerator = new AudioGenerator(8000);
+    private double[] ticks;
 
-    public Metronome() {
+    public Metronome(double[] ticks) {
         audioGenerator.createPlayer();
+        this.ticks = ticks;
     }
 
     public void calcSilence() {
@@ -23,8 +25,8 @@ public class Metronome {
 
     public void play() {
         calcSilence();
-        double[] tick =
-                audioGenerator.getSineWave(this.tick, 8000, beatSound);
+       /* double[] tick =
+                audioGenerator.getSineWave(this.tick, 8000, beatSound);*/
         double[] tock =
                 audioGenerator.getSineWave(this.tick, 8000, sound);
         double silence = 0;
@@ -36,7 +38,7 @@ public class Metronome {
                     if(b == 0)
                         sound[i] = tock[t];
                     else
-                        sound[i] = tick[t];
+                        sound[i] = ticks[t];
                     t++;
                 } else {
                     sound[i] = silence;
