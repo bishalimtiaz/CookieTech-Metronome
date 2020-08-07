@@ -24,6 +24,8 @@ public class MetronomeActivity extends AppCompatActivity {
     private Button play_btn, stop_btn;
     Metronome metronome;
     AudioGenerator audio;
+    private double [] tick = new double[1500];
+    private double [] tock = new double[1500];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,77 +35,15 @@ public class MetronomeActivity extends AppCompatActivity {
         stop_btn = findViewById(R.id.stop_btn);
 
         audio = new AudioGenerator(8000);
-        final double[] silence = audio.getSineWave(200, 8000, 0);
 
-        int noteDuration = 2400;
-
-        final double[] doNote = audio.getSineWave(noteDuration/2, 8000, 523.25);
-        final double[] reNote = audio.getSineWave(noteDuration/2, 8000, 587.33);
-        final double[] faNote = audio.getSineWave(noteDuration, 8000, 698.46);
-        final double[] laNote = audio.getSineWave(noteDuration, 8000, 880.00);
-        final double[] laNote2 = audio.getSineWave((int) (noteDuration*1.25), 8000, 880.00);
-        final double[] siNote = audio.getSineWave(noteDuration/2, 8000, 987.77);
-        final double[] doNote2 = audio.getSineWave((int) (noteDuration*1.25), 8000, 523.25);
-        final double[] miNote = audio.getSineWave(noteDuration/2, 8000, 659.26);
-        final double[] miNote2 = audio.getSineWave(noteDuration, 8000, 659.26);
-        final double[] doNote3 = audio.getSineWave(noteDuration, 8000, 523.25);
-        final double[] miNote3 = audio.getSineWave(noteDuration*3, 8000, 659.26);
-        final double[] reNote2 = audio.getSineWave(noteDuration*4, 8000, 587.33);
+        initializeFields();
 
         play_btn.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.P)
             @Override
             public void onClick(View v) {
-
-                /** Yesterday's Testing*/
-               /* //metronome.playPublic();
-                MediaExtractor mex = new MediaExtractor();
-                //final AssetFileDescriptor afd=getResources().openRawResourceFd(R.raw.tick);
-                final String uriPath="android.resource://"+getPackageName()+"/" + R.raw.tick;
-                final Uri uri= Uri.parse(uriPath);
-                try {
-                    mex.setDataSource(getApplicationContext(),uri,null);// the adresss location of the sound on sdcard.
-                    Log.d("sample Size",String.valueOf(mex.getSampleSize()));
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-
-                MediaFormat mf = mex.getTrackFormat(0);
-
-                //int bitRate = mf.getInteger(MediaFormat.KEY_BIT_RATE);
-                int sampleRate = mf.getInteger(MediaFormat.KEY_SAMPLE_RATE);
-                String mime = mf.getString(MediaFormat.KEY_MIME);
-                //Log.d("bitRate",String.valueOf(bitRate));
-                Log.d("sampleRate",String.valueOf(sampleRate));*//*
-                final String uriPath="android.resource://"+getPackageName()+"/" + R.raw.tick;
-                //final Uri uri= Uri.parse(uriPath);
-                File file =  new File(String.valueOf(getResources().openRawResource(R.raw.tick)));
-                Log.d("Can Read", String.valueOf(file.canRead()));*/
-
-                InputStream inputStream = getResources().openRawResource(R.raw.filename);
-                BufferedReader bufferedReader= new BufferedReader(new InputStreamReader(inputStream));
-                String eachline = null;
-                double [] tick = new double[1896];
-                int i =0;
-                try {
-                    eachline = bufferedReader.readLine();
-                    while (eachline != null) {
-                        // `the words in the file are separated by space`, so to get each words
-                        String[] words = eachline.split(" ");
-                        Log.d("value: ", eachline);
-                        tick[i] = Double.parseDouble(eachline);
-                        eachline = bufferedReader.readLine();
-                        i++;
-                    }
-                    bufferedReader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                metronome = new Metronome(tick);
+                metronome = new Metronome(tick,tock);
                 metronome.playPublic();
-
             }
         });
 
@@ -114,5 +54,55 @@ public class MetronomeActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void initializeFields() {
+        //Read Tick samples
+        InputStream tick_inputStream = getResources().openRawResource(R.raw.tick_sample_04);
+        BufferedReader tick_bufferedReader= new BufferedReader(new InputStreamReader(tick_inputStream));
+        String tick_eachline;
+
+        int i =0;
+        try {
+            tick_eachline = tick_bufferedReader.readLine();
+            while (tick_eachline != null) {
+                // `the words in the file are separated by space`, so to get each words
+                /*String[] words = tick_eachline.split(" ");*/
+
+                tick[i] = Double.parseDouble(tick_eachline);
+                tick_eachline = tick_bufferedReader.readLine();
+                i++;
+            }
+            tick_bufferedReader.close();
+            tick_inputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        //Read tock samples
+
+        InputStream tock_inputStream = getResources().openRawResource(R.raw.tock_sample_04);
+        BufferedReader tock_bufferedReader= new BufferedReader(new InputStreamReader(tock_inputStream));
+        String tock_eachline = null;
+
+        int j =0;
+        try {
+            tock_eachline = tock_bufferedReader.readLine();
+            while (tock_eachline != null) {
+                // `the words in the file are separated by space`, so to get each words
+                /*String[] words = tock_eachline.split(" ");*/
+
+                tock[j] = Double.parseDouble(tock_eachline);
+                tock_eachline = tock_bufferedReader.readLine();
+                j++;
+            }
+            tock_bufferedReader.close();
+            tock_inputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
     }
 }
