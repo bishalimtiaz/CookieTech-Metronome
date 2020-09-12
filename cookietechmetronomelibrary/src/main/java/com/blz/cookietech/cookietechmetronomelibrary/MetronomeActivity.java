@@ -24,8 +24,8 @@ public class MetronomeActivity extends AppCompatActivity {
     private Button play_btn, stop_btn;
     Metronome metronome;
     AudioGenerator audio;
-    private double [] tick = new double[1500];
-    private double [] tock = new double[1500];
+    private double [] tick = new double[3000];
+    private double [] tock = new double[3000];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +58,7 @@ public class MetronomeActivity extends AppCompatActivity {
 
     private void initializeFields() {
         //Read Tick samples
-        InputStream tick_inputStream = getResources().openRawResource(R.raw.tick_sample_04);
+        InputStream tick_inputStream = getResources().openRawResource(R.raw.tick_sample_02);
         BufferedReader tick_bufferedReader= new BufferedReader(new InputStreamReader(tick_inputStream));
         String tick_eachline;
 
@@ -82,7 +82,7 @@ public class MetronomeActivity extends AppCompatActivity {
 
         //Read tock samples
 
-        InputStream tock_inputStream = getResources().openRawResource(R.raw.tock_sample_04);
+        InputStream tock_inputStream = getResources().openRawResource(R.raw.tock_sample_02);
         BufferedReader tock_bufferedReader= new BufferedReader(new InputStreamReader(tock_inputStream));
         String tock_eachline = null;
 

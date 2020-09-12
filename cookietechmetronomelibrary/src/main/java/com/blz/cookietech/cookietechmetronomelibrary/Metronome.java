@@ -1,8 +1,8 @@
 package com.blz.cookietech.cookietechmetronomelibrary;
 
 class Metronome {
-    private double bpm = 180;
-    private int beat=4;
+    private double bpm = 300;
+    private int beat=6;
     private int silence;
 
     /*private double beatSound = 900;

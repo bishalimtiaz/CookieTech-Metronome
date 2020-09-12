@@ -4,7 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#23374D"
     tools:context=".MetronomeActivity">
+
+    <com.blz.cookietech.cookietechmetronomelibrary.View.ChorderaRoundWheeler
+        android:layout_width="500px"
+        android:layout_height="800px"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="50dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/play_btn"
