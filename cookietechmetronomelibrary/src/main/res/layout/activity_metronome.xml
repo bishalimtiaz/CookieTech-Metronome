@@ -7,7 +7,7 @@
     android:background="#23374D"
     tools:context=".MetronomeActivity">
 
-    <com.blz.cookietech.cookietechmetronomelibrary.View.ChorderaRoundWheeler
+    <com.blz.cookietech.cookietechmetronomelibrary.View.ChordEraRoundWheeler
         android:layout_width="500px"
         android:layout_height="800px"
         android:layout_marginStart="50dp"

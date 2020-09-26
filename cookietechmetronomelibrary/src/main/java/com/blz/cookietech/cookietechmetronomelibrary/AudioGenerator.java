@@ -52,7 +52,22 @@ public class AudioGenerator {
     }
 
     public void destroyAudioTrack() {
+        audioTrack.pause();
         audioTrack.stop();
+
+
+
+    }
+
+    public void initAudioTrack(){
+        audioTrack.play();
+    }
+
+    public boolean isPlayerCreated(){
+        return audioTrack != null;
+    }
+
+    public void resetAudioTrack(){
         audioTrack.release();
     }
 

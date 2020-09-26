@@ -5,7 +5,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
@@ -19,9 +18,10 @@ import android.view.ViewTreeObserver;
 
 import androidx.annotation.Nullable;
 
+import com.blz.cookietech.Listener.BPMListener;
 import com.blz.cookietech.cookietechmetronomelibrary.R;
 
-public class ChorderaRoundWheeler extends View {
+public class ChordEraRoundWheeler extends View {
     Drawable wheeler;
     GestureDetector gestureDetector;
     private float angle = (float) 0.0;
@@ -45,12 +45,19 @@ public class ChorderaRoundWheeler extends View {
 
     final RectF oval = new RectF();
 
+    private BPMListener bpmListener;
 
-    public ChorderaRoundWheeler(Context context) {
+
+
+    public ChordEraRoundWheeler(Context context) {
         super(context);
+        /*bpmListener = (BPMListener) get*/
+
     }
 
-    public ChorderaRoundWheeler(Context context, @Nullable AttributeSet attrs) {
+
+
+    public ChordEraRoundWheeler(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         gestureDetector = new GestureDetector(context,new WheelerGestureListener());
 
@@ -112,11 +119,11 @@ public class ChorderaRoundWheeler extends View {
 
     }
 
-    public ChorderaRoundWheeler(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public ChordEraRoundWheeler(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    public ChorderaRoundWheeler(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public ChordEraRoundWheeler(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
 
     }
@@ -240,6 +247,7 @@ public class ChorderaRoundWheeler extends View {
                     percent =tempPercent;
                 }
                 Log.d("akash_wheeler", "onScroll: " + percent);
+                bpmListener.onBPMChange(percent);
                 
                 invalidate();
                 prevAngle = posDegrees;
@@ -278,6 +286,13 @@ public class ChorderaRoundWheeler extends View {
     private float cartesianToPolar(float x, float y) {
         return (float) -Math.toDegrees(Math.atan2(x - 0.5f, y - 0.5f));
     }
+
+     public void setBPMListener(BPMListener listener){
+         bpmListener = listener;
+
+    }
+
+
 
 
 
