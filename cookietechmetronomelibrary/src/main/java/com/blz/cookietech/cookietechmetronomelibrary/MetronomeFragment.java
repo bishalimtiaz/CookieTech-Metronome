@@ -47,6 +47,8 @@ public class MetronomeFragment extends Fragment implements BPMListener {
     private ImageView play_pause_icon;
     private boolean isPlaying = false;
 
+    private static final String TAG = "MetronomeFragment";
+
     private double [] tick = new double[3000];
     private double [] tock = new double[3000];
 
@@ -61,6 +63,7 @@ public class MetronomeFragment extends Fragment implements BPMListener {
 
     public MetronomeFragment() {
         // Required empty public constructor
+        Log.d(TAG, "MetronomeFragment: ");
     }
 
     /**
