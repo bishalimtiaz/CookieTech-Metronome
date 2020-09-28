@@ -1,5 +1,6 @@
 package com.blz.cookietech.cookietechmetronomelibrary;
 
+import android.content.Intent;
 import android.media.Image;
 import android.nfc.Tag;
 import android.os.Bundle;
@@ -7,9 +8,11 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,12 +21,14 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.blz.cookietech.Listener.BPMListener;
+import com.blz.cookietech.Services.MetronomeService;
 import com.blz.cookietech.cookietechmetronomelibrary.View.ChordEraRoundWheeler;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -64,6 +69,7 @@ public class MetronomeFragment extends Fragment implements BPMListener {
     public MetronomeFragment() {
         // Required empty public constructor
         Log.d(TAG, "MetronomeFragment: ");
+        // test
     }
 
     /**
@@ -92,9 +98,13 @@ public class MetronomeFragment extends Fragment implements BPMListener {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        audio = new AudioGenerator(8000);
-        metronome = new Metronome(tick,tock);
         readTickTock();
+        audio = new AudioGenerator(8000);
+        metronome = Metronome.getInstance();
+        metronome.setTickTock(tick,tock);
+
+        Log.d(TAG, "onCreate: tick count: " + metronome.getTickCount());
+
     }
 
     private void readTickTock() {
@@ -164,16 +174,28 @@ public class MetronomeFragment extends Fragment implements BPMListener {
             @Override
             public void onClick(View v) {
 
+                Intent metronomeServiceIntent = new Intent(getActivity(),MetronomeService.class);
+
                 if (!isPlaying){
 
-                    metronome.playPublic();
+                    //play
+                    //metronome.playPublic();
+
+                    /**This will start service when app is open**/
+                    //startService(serviceIntent);
+                    //metronomeServiceIntent.putExtra("metronome", (Parcelable) metronome);
+                    ContextCompat.startForegroundService(Objects.requireNonNull(getActivity()),metronomeServiceIntent);
                     isPlaying = true;
                     play_pause_icon.setImageResource(R.drawable.ic_pause);
 
                 }
                 else{
 
-                    metronome.stop();
+                   //stop
+                    // metronome.stop();
+
+                    Objects.requireNonNull(getActivity()).stopService(metronomeServiceIntent);
+
                     isPlaying = false;
                     play_pause_icon.setImageResource(R.drawable.ic_play);
                 }
@@ -184,20 +206,14 @@ public class MetronomeFragment extends Fragment implements BPMListener {
     }
 
     @Override
-    public void onBPMChange(float bpm) {
+    public void onBPMChange(int bpm) {
 
-        metronome.setBpm((double)bpm);
+        metronome.setBpm(bpm);
         Log.d("bpm count", String.valueOf(bpm));
 
     }
 
-    static class MetronomeRunnable implements Runnable{
 
-        @Override
-        public void run() {
-
-        }
-    }
 
 
 }

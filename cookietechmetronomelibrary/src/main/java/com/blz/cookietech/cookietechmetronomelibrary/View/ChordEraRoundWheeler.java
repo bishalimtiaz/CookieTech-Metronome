@@ -151,7 +151,7 @@ public class ChordEraRoundWheeler extends View {
         float bpmValueTextHeight = bpmValueTextBound.height();
         int bpmValuePositionX = (int) (middlePointX - bpmValueTextWidth/2 + waveSize/2);
         int bpmValuePositionY = (int) (middlePointY + bpmValueTextHeight/2);
-        canvas.drawText(String.valueOf((int)percent),bpmValuePositionX,bpmValuePositionY,bpmValueTextColor);
+        canvas.drawText(String.valueOf(percentToBpm(percent)),bpmValuePositionX,bpmValuePositionY,bpmValueTextColor);
 
         waveBound.left = bpmValuePositionX - waveSize - 10;
         waveBound.right = bpmValuePositionX - 10;
@@ -247,7 +247,7 @@ public class ChordEraRoundWheeler extends View {
                     percent =tempPercent;
                 }
                 Log.d("akash_wheeler", "onScroll: " + percent);
-                bpmListener.onBPMChange(percent);
+                bpmListener.onBPMChange(percentToBpm(percent));
                 
                 invalidate();
                 prevAngle = posDegrees;
@@ -290,6 +290,11 @@ public class ChordEraRoundWheeler extends View {
      public void setBPMListener(BPMListener listener){
          bpmListener = listener;
 
+    }
+
+
+    public int percentToBpm(double percent){
+        return (int) (380*percent/100) +20;
     }
 
 

@@ -53,7 +53,8 @@ public class AudioGenerator {
 
     public void destroyAudioTrack() {
         audioTrack.pause();
-        audioTrack.stop();
+        audioTrack.flush();
+        //audioTrack.stop();
 
 
 

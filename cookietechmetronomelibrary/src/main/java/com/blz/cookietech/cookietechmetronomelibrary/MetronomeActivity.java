@@ -42,8 +42,8 @@ public class MetronomeActivity extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.P)
             @Override
             public void onClick(View v) {
-                metronome = new Metronome(tick,tock);
-                metronome.playPublic();
+                //metronome = new Metronome(tick,tock);
+                //metronome.playPublic();
             }
         });
 
