@@ -60,6 +60,8 @@ public class ChordEraRoundWheeler extends View {
     public ChordEraRoundWheeler(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         gestureDetector = new GestureDetector(context,new WheelerGestureListener());
+        wheeler = getResources().getDrawable(R.drawable.metronome_controller);
+        wave  = getResources().getDrawable(R.drawable.ic_wave);
 
         getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -77,8 +79,7 @@ public class ChordEraRoundWheeler extends View {
                 middlePointY = height/2;
 
 
-                wheeler = getResources().getDrawable(R.drawable.metronome_controller);
-                wave  = getResources().getDrawable(R.drawable.ic_wave);
+
                 wheelerPadding = width/10;
                 Log.d("akash_wheeler", "onGlobalLayout: "+wheelerPadding);
                 wheelerSize = width - wheelerPadding;
@@ -294,7 +295,7 @@ public class ChordEraRoundWheeler extends View {
 
 
     public int percentToBpm(double percent){
-        return (int) (380*percent/100) +20;
+        return (int) (220*percent/100) +20;
     }
 
 

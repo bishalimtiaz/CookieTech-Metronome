@@ -1,38 +1,32 @@
 package com.blz.cookietech.cookietechmetronomelibrary;
 
+import android.app.PendingIntent;
 import android.content.Intent;
-import android.media.Image;
-import android.nfc.Tag;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
-import android.os.Parcelable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.blz.cookietech.Listener.BPMListener;
 import com.blz.cookietech.Services.MetronomeService;
+import com.blz.cookietech.cookietechmetronomelibrary.Model.Constants;
 import com.blz.cookietech.cookietechmetronomelibrary.View.ChordEraRoundWheeler;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link MetronomeFragment#newInstance} factory method to
  * create an instance of this fragment.
  * sample -> 6000
  * sample_01 -> 4500
@@ -54,62 +48,32 @@ public class MetronomeFragment extends Fragment implements BPMListener {
 
     private static final String TAG = "MetronomeFragment";
 
-    private double [] tick = new double[3000];
-    private double [] tock = new double[3000];
-
-    private Metronome metronome;
-    private AudioGenerator audio;
 
     private ChordEraRoundWheeler bpmWheel;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private ServiceConnection serviceConnection;
 
-    public MetronomeFragment() {
-        // Required empty public constructor
-        Log.d(TAG, "MetronomeFragment: ");
-        // test
-    }
+    boolean mBound = false;
+    private MetronomeService mService;
+    Intent metronomeServiceIntent;
+    PendingIntent pendingIntent;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MetronomeFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static MetronomeFragment newInstance(String param1, String param2) {
-        MetronomeFragment fragment = new MetronomeFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+
+    public MetronomeFragment(PendingIntent pendingIntent) {
+        this.pendingIntent = pendingIntent;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-
         readTickTock();
-        audio = new AudioGenerator(8000);
-        metronome = Metronome.getInstance();
-        metronome.setTickTock(tick,tock);
 
-        Log.d(TAG, "onCreate: tick count: " + metronome.getTickCount());
 
     }
 
     private void readTickTock() {
         //Read Tick samples
-        InputStream tick_inputStream = getResources().openRawResource(R.raw.tick_sample_02);
+        InputStream tick_inputStream = getResources().openRawResource(R.raw.test_sample_tick);
         BufferedReader tick_bufferedReader= new BufferedReader(new InputStreamReader(tick_inputStream));
         String tick_eachline;
 
@@ -120,7 +84,7 @@ public class MetronomeFragment extends Fragment implements BPMListener {
                 // `the words in the file are separated by space`, so to get each words
                 /*String[] words = tick_eachline.split(" ");*/
 
-                tick[i] = Double.parseDouble(tick_eachline);
+                Constants.setTickValue(i,Double.parseDouble(tick_eachline));
                 tick_eachline = tick_bufferedReader.readLine();
                 i++;
             }
@@ -133,7 +97,7 @@ public class MetronomeFragment extends Fragment implements BPMListener {
 
         //Read tock samples
 
-        InputStream tock_inputStream = getResources().openRawResource(R.raw.tock_sample_02);
+        InputStream tock_inputStream = getResources().openRawResource(R.raw.test_sample_tock);
         BufferedReader tock_bufferedReader= new BufferedReader(new InputStreamReader(tock_inputStream));
         String tock_eachline = null;
 
@@ -143,8 +107,7 @@ public class MetronomeFragment extends Fragment implements BPMListener {
             while (tock_eachline != null) {
                 // `the words in the file are separated by space`, so to get each words
                 /*String[] words = tock_eachline.split(" ");*/
-
-                tock[j] = Double.parseDouble(tock_eachline);
+                Constants.setTockValue(j,Double.parseDouble(tock_eachline));
                 tock_eachline = tock_bufferedReader.readLine();
                 j++;
             }
@@ -170,50 +133,70 @@ public class MetronomeFragment extends Fragment implements BPMListener {
         bpmWheel = view.findViewById(R.id.bpmWheel);
         bpmWheel.setBPMListener(this);
 
+
+
+
+
+
         play_pause_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                Intent metronomeServiceIntent = new Intent(getActivity(),MetronomeService.class);
 
                 if (!isPlaying){
 
-                    //play
-                    //metronome.playPublic();
 
-                    /**This will start service when app is open**/
-                    //startService(serviceIntent);
-                    //metronomeServiceIntent.putExtra("metronome", (Parcelable) metronome);
-                    ContextCompat.startForegroundService(Objects.requireNonNull(getActivity()),metronomeServiceIntent);
+
+                    Intent playPauseIntent = new Intent(MetronomeService.PlayPauseBroadcastReceiver.ACTION_PLAY_PAUSE);
+                    playPauseIntent.putExtra(MetronomeService.PlayPauseBroadcastReceiver.PLAY_PAUSE_EXTRA,true);
+                    requireActivity().sendBroadcast(playPauseIntent);
                     isPlaying = true;
                     play_pause_icon.setImageResource(R.drawable.ic_pause);
+
+
 
                 }
                 else{
 
-                   //stop
-                    // metronome.stop();
-
-                    Objects.requireNonNull(getActivity()).stopService(metronomeServiceIntent);
-
+                    Intent playPauseIntent = new Intent(MetronomeService.PlayPauseBroadcastReceiver.ACTION_PLAY_PAUSE);
+                    playPauseIntent.putExtra(MetronomeService.PlayPauseBroadcastReceiver.PLAY_PAUSE_EXTRA,false);
+                    requireActivity().sendBroadcast(playPauseIntent);
                     isPlaying = false;
                     play_pause_icon.setImageResource(R.drawable.ic_play);
+
+
                 }
 
             }
         });
+
+
+
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Intent service = new Intent(requireContext(),MetronomeService.class);
+        service.putExtra("something",pendingIntent);
+        requireActivity().startService(service);
 
     }
 
     @Override
     public void onBPMChange(int bpm) {
 
-        metronome.setBpm(bpm);
-        Log.d("bpm count", String.valueOf(bpm));
+        Constants.setBpm(bpm);
 
     }
 
-
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Intent service = new Intent(requireContext(),MetronomeService.class);
+        requireActivity().stopService(service);
+    }
 
 
 }

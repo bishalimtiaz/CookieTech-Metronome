@@ -2,7 +2,9 @@ package com.blz.cookietech.cookietechmetronomelibrary;
 
 import android.media.AudioFormat;
 import android.media.AudioManager;
+import android.media.AudioRouting;
 import android.media.AudioTrack;
+import android.util.Log;
 
 public class AudioGenerator {
 
@@ -48,19 +50,16 @@ public class AudioGenerator {
 
     public void writeSound(double[] samples) {
         byte[] generatedSnd = get16BitPcm(samples);
-        audioTrack.write(generatedSnd, 0, generatedSnd.length);
+        int count = audioTrack.write(generatedSnd, 0, generatedSnd.length,AudioTrack.WRITE_BLOCKING);
+        Log.d("akash_metronome", "writeSound: "+ count);
     }
 
-    public void destroyAudioTrack() {
+    public void pauseAudioTrack() {
         audioTrack.pause();
         audioTrack.flush();
-        //audioTrack.stop();
-
-
-
     }
 
-    public void initAudioTrack(){
+    public void playAudioTrack(){
         audioTrack.play();
     }
 
@@ -68,7 +67,9 @@ public class AudioGenerator {
         return audioTrack != null;
     }
 
-    public void resetAudioTrack(){
+    public void destroyAudioTrack(){
+        audioTrack.stop();
+        audioTrack.flush();
         audioTrack.release();
     }
 
