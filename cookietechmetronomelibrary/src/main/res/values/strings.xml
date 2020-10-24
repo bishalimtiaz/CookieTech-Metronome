@@ -2,4 +2,12 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="todo">TODO</string>
+    <string name="subdivision">Subdivision</string>
+    <string name="time_signature">Time Signature</string>
+    <string name="metronome">Metronome</string>
+    <string name="deactivate">Deactivate</string>
+    <string name="activate">Activate</string>
+    <string name="finish">Finish</string>
+    <string name="slash">/</string>
+    <string name="min">Min</string>
 </resources>

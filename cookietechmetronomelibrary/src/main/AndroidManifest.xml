@@ -4,7 +4,8 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <application
-        android:name="com.blz.cookietech.Services.App">
+        android:name="com.blz.cookietech.Services.App"
+        android:windowSoftInputMode="adjustNothing">
         <activity android:name=".MetronomeActivity" />
         <service android:name="com.blz.cookietech.Services.MetronomeService"/>
     </application>

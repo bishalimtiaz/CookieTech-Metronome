@@ -4,14 +4,18 @@ import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
+import android.util.Log;
 
 public class App extends Application {
+    private static final String TAG = "App : Module";
 
     public static final String CHANNEL_ID = "metronomeServiceChannel";
 
     @Override
     public void onCreate() {
         super.onCreate();
+
+        Log.d(TAG, "onCreate: called");
 
         createNotificationChannels();
     }
