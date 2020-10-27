@@ -7,10 +7,7 @@ import androidx.fragment.app.FragmentTransaction;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 
-import com.blz.cookietech.cookietechmetronomelibrary.MetronomeActivity;
 import com.blz.cookietech.cookietechmetronomelibrary.MetronomeFragment;
 
 public class MainActivity extends AppCompatActivity {
@@ -34,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        MetronomeFragment metronomeFragment = new MetronomeFragment(pendingIntent);
+        MetronomeFragment metronomeFragment = new MetronomeFragment(pendingIntent,AppSharedComponents.getTick(),AppSharedComponents.getTock());
         fragmentTransaction.add(R.id.containerView,metronomeFragment);
         fragmentTransaction.addToBackStack("metronome");
         fragmentTransaction.commit();

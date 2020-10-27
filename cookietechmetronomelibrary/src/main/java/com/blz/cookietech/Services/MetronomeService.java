@@ -32,18 +32,25 @@ import com.blz.cookietech.cookietechmetronomelibrary.R;
 import java.util.List;
 
 import static android.app.Notification.EXTRA_NOTIFICATION_ID;
-import static com.blz.cookietech.Services.App.CHANNEL_ID;
 
 public class MetronomeService extends Service {
+    public static final String PENDING_INTENT = "pending_intent";
+    public static final String TICK_VALUE = "tick_value";
+    public static final String TOCK_VALUE = "tock_value";
+
+    public static final String CHANNEL_ID = "metronomeServiceChannel";
 
     private static final String TAG = "MetronomeService";
 
-    private Metronome metronomeThread = new Metronome();
+    private Metronome metronomeThread;
     private PlayPauseBroadcastReceiver playPauseBroadcastReceiver = new PlayPauseBroadcastReceiver();
 
     // Binder given to clients
     private final int notificationId = 1;
     private boolean isPlaying = false;
+
+    private double[] tick;
+    private double[] tock;
 
     /**
      * Class used for the client Binder.  Because we know this service always
@@ -68,7 +75,7 @@ public class MetronomeService extends Service {
         unregisterReceiver(playPauseBroadcastReceiver);
         Log.d("akash_debug", "onDestroy: ");
         //metronomeThread.stopMetronome();
-        metronomeThread.looper.quitSafely();
+        metronomeThread.destroyAndReleaseResource();
     }
 
     @Nullable
@@ -89,7 +96,13 @@ public class MetronomeService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        PendingIntent pendingIntent = intent.getParcelableExtra("something");
+        PendingIntent pendingIntent = intent.getParcelableExtra(PENDING_INTENT);
+        tick = (double[]) intent.getExtras().getSerializable(TICK_VALUE);
+        tock = (double[]) intent.getExtras().getSerializable(TOCK_VALUE);
+
+        metronomeThread = new Metronome(tick,tock);
+
+        Log.d("akash_debug", "onStartCommand: " + tick[500] + " " + tock[500]);
 
         Log.d("akash_debug", "onStartCommand: ");
         Intent quitIntent = new Intent(PlayPauseBroadcastReceiver.ACTION_QUIT);
@@ -123,6 +136,9 @@ public class MetronomeService extends Service {
         filter.addAction(PlayPauseBroadcastReceiver.ACTION_PLAY_PAUSE);
         filter.addAction(PlayPauseBroadcastReceiver.ACTION_QUIT);
         filter.addAction(PlayPauseBroadcastReceiver.ACTION_TOGGLE);
+        filter.addAction(PlayPauseBroadcastReceiver.TICK_TOCK_VALUE);
+        filter.addAction(PlayPauseBroadcastReceiver.BPM_CHANGE);
+        filter.addAction(PlayPauseBroadcastReceiver.TIME_SIGNATURE_CHANGE);
         registerReceiver(playPauseBroadcastReceiver, filter);
 
 
@@ -144,6 +160,12 @@ public class MetronomeService extends Service {
         public static final String ACTION_TOGGLE = "com.blz.cookietech.TOGGLE";
         public static final String ACTION_QUIT = "com.blz.cookietech.QUIT";
         public static final String PLAY_PAUSE_EXTRA = "play_pause_extra";
+        public static final String TICK_TOCK_VALUE = "tick_tock_value";
+        public static final String BPM_VALUE = "bpm_value";
+        public static final String BPM_CHANGE = "com.blz.cookietech.BPM_CHANGE";
+        public static final String TIME_SIGNATURE_CHANGE = "com.blz.cookietech.TIME_SIGNATURE_CHANGE";
+        public static final String TIME_SIGNATURE_VALUE = "time_signature_value";
+
 
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -194,6 +216,14 @@ public class MetronomeService extends Service {
                                 pause();
                             }
                         }
+                        break;
+                    case BPM_CHANGE:
+                        int bpm = intent.getIntExtra(BPM_VALUE,80);
+                        metronomeThread.setBpm(bpm);
+                        break;
+                    case TIME_SIGNATURE_CHANGE:
+                        int timeSignature = intent.getIntExtra(TIME_SIGNATURE_VALUE,4);
+                        metronomeThread.setTimeSignature(timeSignature);
                         break;
                 }
             }

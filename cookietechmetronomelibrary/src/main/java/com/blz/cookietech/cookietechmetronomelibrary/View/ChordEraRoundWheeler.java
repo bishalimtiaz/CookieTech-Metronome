@@ -17,11 +17,14 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.blz.cookietech.Listener.BPMListener;
 import com.blz.cookietech.cookietechmetronomelibrary.R;
 
 public class ChordEraRoundWheeler extends View {
+
+    private static final String TAG = "bishal_wheeler";
     Drawable wheeler;
     GestureDetector gestureDetector;
     private float angle = (float) 0.0;
@@ -30,7 +33,7 @@ public class ChordEraRoundWheeler extends View {
     float percent;
     int wheelerSize = 0;
     int wheelerPadding = 0;
-    float bpmTextSize;
+    int bpmTextSize;
     Paint bpmTextColor;
 
     Drawable  outerRing;
@@ -79,13 +82,14 @@ public class ChordEraRoundWheeler extends View {
                 middlePointY = height/2;
 
 
-
+                wheeler = ResourcesCompat.getDrawable(getResources(),R.drawable.metronome_controller,null);
+                wave  = ResourcesCompat.getDrawable(getResources(),R.drawable.ic_wave,null);
                 wheelerPadding = width/10;
                 Log.d("akash_wheeler", "onGlobalLayout: "+wheelerPadding);
                 wheelerSize = width - wheelerPadding;
 
                 wheeler.setBounds(wheelerPadding,wheelerPadding,wheelerSize,wheelerSize);
-                outerRing = getResources().getDrawable(R.drawable.wheeler_progress);
+                outerRing = ResourcesCompat.getDrawable(getResources(),R.drawable.wheeler_progress,null);
                 outerRing.setBounds(0,0,width,height);
 
                 bpmValueTextSize = (float) width/5;
@@ -101,10 +105,10 @@ public class ChordEraRoundWheeler extends View {
 
 
 
-                waveSize = width/10;
+                waveSize = (width)/16;
                 wave.setBounds(0,0,waveSize,waveSize);
 
-                bpmTextSize = (float) width/12;
+                bpmTextSize = width/12;
                 bpmTextColor = new Paint();
                 bpmTextColor.setColor(Color.WHITE);
                 bpmTextColor.setTextSize(bpmTextSize);
@@ -136,65 +140,65 @@ public class ChordEraRoundWheeler extends View {
 
 
 
-        Log.d("akash_wheeler", "onDraw: ");
-        canvas.save();
-        angle = getAngleFromPercent(percent);
-        canvas.rotate(angle,(float)width/2,(float)height/2);
-        wheeler.draw(canvas);
-        canvas.restore();
-        outerRing.draw(canvas);
+        if (bpmValueTextColor != null && bpmTextColor != null && outerRingProgressPaint != null){
+            Log.d("akash_wheeler", "onDraw: ");
+            canvas.save();
+            Log.d(TAG, "onDraw: percent : " + percent);
+            angle = getAngleFromPercent(percent);
+            canvas.rotate(angle,(float)width/2,(float)height/2);
+            wheeler.draw(canvas);
+            canvas.restore();
+            outerRing.draw(canvas);
 
 
 
-        String bpmValue = String.valueOf((int)percent);
-        bpmValueTextColor.getTextBounds(bpmValue,0,bpmValue.length(),bpmValueTextBound);
-        float bpmValueTextWidth = bpmValueTextBound.width();
-        float bpmValueTextHeight = bpmValueTextBound.height();
-        int bpmValuePositionX = (int) (middlePointX - bpmValueTextWidth/2 + waveSize/2);
-        int bpmValuePositionY = (int) (middlePointY + bpmValueTextHeight/2);
-        canvas.drawText(String.valueOf(percentToBpm(percent)),bpmValuePositionX,bpmValuePositionY,bpmValueTextColor);
-
-        waveBound.left = bpmValuePositionX - waveSize - 10;
-        waveBound.right = bpmValuePositionX - 10;
-        waveBound.top = middlePointY - waveSize/2;
-        waveBound.bottom = waveBound.top+waveSize;
-        wave.setBounds(waveBound);
-        wave.draw(canvas);
-
-
-        float bpmTextWidth = bpmTextColor.measureText("BPM");
-        int bpmPositionX = middlePointX - (int) bpmTextWidth /2;
-        int bpmPositionY = (int) (middlePointY - bpmValueTextHeight);
-        canvas.drawText("BPM",bpmPositionX,bpmPositionY,bpmTextColor);
+            String bpmValue = String.valueOf(percentToBpm(percent));
+            bpmValueTextColor.getTextBounds(bpmValue,0,bpmValue.length(),bpmValueTextBound);
+            float bpmValueTextWidth = bpmValueTextBound.width();
+            float bpmValueTextHeight = bpmValueTextBound.height();
+            int bpmValuePositionX = (int) (middlePointX - bpmValueTextWidth/2);
+            int bpmValuePositionY = (int) (middlePointY + bpmValueTextHeight/2);
+            canvas.drawText(bpmValue,bpmValuePositionX,bpmValuePositionY,bpmValueTextColor);
 
 
 
-        float radius;
+            float bpmTextWidth = bpmTextColor.measureText("BPM");
+            int bpmPositionX = (int) (middlePointX - bpmTextWidth /2 + waveSize/2);
+            int bpmPositionY = (int) (middlePointY - bpmValueTextHeight);
+            canvas.drawText("BPM",bpmPositionX,bpmPositionY,bpmTextColor);
 
-        if (width > height) {
-            radius = (float) (height / 2.222) + width/40;
-        } else {
-            radius = (float) (width / 2.222) + width/40;
+
+            waveBound.left = bpmPositionX - waveSize - 20;
+            waveBound.right = bpmPositionX - 20;
+            waveBound.top = bpmPositionY - waveSize;
+            waveBound.bottom = waveBound.top+waveSize;
+            wave.setBounds(waveBound);
+            wave.draw(canvas);
+
+
+
+            float radius;
+
+            if (width > height) {
+                radius = (float) (height / 2.222) + width/40f;
+            } else {
+                radius = (float) (width / 2.222) + width/40f;
+            }
+
+
+
+            float angle = getAngleFromPercent(percent);
+            if(angle < 0)
+                angle = angle + 360;
+
+            Log.d("akash_wheeler", "onDraw: degree" + getAngleFromPercent(percent) );
+
+            oval.set(middlePointX - radius,
+                    middlePointY - radius,
+                    middlePointX + radius,
+                    middlePointY + radius);
+            canvas.drawArc(oval, -90, angle, false, outerRingProgressPaint);
         }
-
-
-        float center_x, center_y;
-
-
-        center_x = width / 2;
-        center_y = height / 2;
-
-        float angle = getAngleFromPercent(percent);
-        if(angle < 0)
-            angle = angle + 360;
-
-        Log.d("akash_wheeler", "onDraw: degree" + getAngleFromPercent(percent) );
-
-        oval.set(center_x - radius,
-                center_y - radius,
-                center_x + radius,
-                center_y + radius);
-        canvas.drawArc(oval, -90, angle, false, outerRingProgressPaint);
     }
 
 
@@ -294,8 +298,22 @@ public class ChordEraRoundWheeler extends View {
     }
 
 
-    public int percentToBpm(double percent){
-        return (int) (220*percent/100) +20;
+
+
+    private int percentToBpm(double percent){
+        return (int) Math.round((380*percent/100) +20);
+    }
+
+    public void setBPM(int BPM){
+
+        percent = BPMToPercent(BPM);
+        invalidate();
+
+    }
+    private float BPMToPercent(int BPM){
+        float tmp = ((float)(BPM -20)/380)*100;
+        Log.d(TAG, "BPMToPercent: tmp : " + tmp);
+        return tmp;
     }
 
 

@@ -1,9 +1,11 @@
 package com.blz.cookietech.cookietechmetronomelibrary;
 
+import android.media.AudioAttributes;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRouting;
 import android.media.AudioTrack;
+import android.os.Build;
 import android.util.Log;
 
 public class AudioGenerator {
@@ -40,18 +42,34 @@ public class AudioGenerator {
 
 
     public void createPlayer(){
-        audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
-                sampleRate, AudioFormat.CHANNEL_OUT_MONO,
-                AudioFormat.ENCODING_PCM_16BIT, sampleRate,
-                AudioTrack.MODE_STREAM);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .build();
+            AudioFormat audioFormat = new AudioFormat.Builder().setEncoding(AudioFormat.ENCODING_PCM_16BIT).setSampleRate(sampleRate).setChannelMask(AudioFormat.CHANNEL_OUT_MONO).build();
+            audioTrack = new AudioTrack(audioAttributes,audioFormat,
+                     sampleRate,
+                    AudioTrack.PERFORMANCE_MODE_LOW_LATENCY,1);
+        }else {
+            audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
+                    sampleRate, AudioFormat.CHANNEL_OUT_MONO,
+                    AudioFormat.ENCODING_PCM_16BIT, sampleRate,
+                    AudioTrack.MODE_STREAM);
+        }
 
-        audioTrack.play();
+        //audioTrack.play();
     }
 
-    public void writeSound(double[] samples) {
-        byte[] generatedSnd = get16BitPcm(samples);
-        int count = audioTrack.write(generatedSnd, 0, generatedSnd.length,AudioTrack.WRITE_BLOCKING);
-        Log.d("akash_metronome", "writeSound: "+ count);
+    public void writeSound(byte[] samples) {
+        Log.d("akash_debug", "writeSound: " + System.currentTimeMillis());
+        int count = 0;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            count = audioTrack.write(samples, 0, samples.length, AudioTrack.WRITE_BLOCKING);
+        }else{
+            count = audioTrack.write(samples, 0, samples.length);
+        }
+        Log.d("akash_debug", "writeSound: " + System.currentTimeMillis() + " " + count);
     }
 
     public void pauseAudioTrack() {
