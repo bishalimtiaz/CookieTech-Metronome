@@ -11,6 +11,7 @@ import androidx.cardview.widget.CardView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
@@ -22,8 +23,6 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
-;
-import com.bekawestberg.loopinglayout.library.LoopingLayoutManager;
 import com.blz.cookietech.Adapter.SubdivisionAdapter;
 import com.blz.cookietech.Dialogs.TimerDialog;
 import com.blz.cookietech.Helpers.Constants;
@@ -72,7 +71,7 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
 
     /** This Value may be handled with sharedPreference Or ViewModel on savedInstanceState**/
     private int leftTimeSignature = 4;
-    private int rightTimeSignature = 4;
+    private int rightTimeSignature = 1;
     private boolean isPlaying = false;
     private int subdivisionPosition = 0;
     private int BPM = 80;
@@ -101,6 +100,7 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
     private MetronomeService mService;
     Intent metronomeServiceIntent;
     PendingIntent pendingIntent;
+    private SubdivisionAdapter adapter;
 
 
     public MetronomeFragment(PendingIntent pendingIntent,double[] tick,double[] tock) {
@@ -176,7 +176,7 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
 
         /** Time Signature Picker Section**/
         rightTimeSignaturePicker.setMinValue(1);
-        rightTimeSignaturePicker.setMaxValue(8);
+        rightTimeSignaturePicker.setMaxValue(4);
         leftTimeSignaturePicker.setMinValue(1);
         leftTimeSignaturePicker.setMaxValue(16);
         leftTimeSignaturePicker.setOnValueChangedListener(this);
@@ -185,6 +185,9 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
         rightTimeSignaturePicker.setOnScrollListener(this);
         leftTimeSignaturePicker.setValue(leftTimeSignature);
         rightTimeSignaturePicker.setValue(rightTimeSignature);
+        rightTimeSignaturePicker.setDisplayedValues(new String[] { "1", "2", "4" , "8" });
+        rightTimeSignaturePicker.setWrapSelectorWheel(false);
+        leftTimeSignaturePicker.setWrapSelectorWheel(false);
 
 
 
@@ -286,16 +289,11 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
 
 
         /** Setup Adapter and recyclerView Function **/
-        RecyclerView.LayoutManager layoutManager = new LoopingLayoutManager(
-                getContext(),                           // Pass the context.
-                LoopingLayoutManager.VERTICAL,  // Pass the orientation. Vertical by default.
-                false                           // Pass whether the views are laid out in reverse.
-                // False by default.
-        );
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(requireContext());
 
         subdivisionRecyclerView.setLayoutManager(layoutManager);
         subdivisionRecyclerView.setHasFixedSize(true);
-        SubdivisionAdapter adapter = new SubdivisionAdapter(subdivisionRecyclerView);
+        adapter = new SubdivisionAdapter(subdivisionRecyclerView,rightTimeSignature);
         subdivisionRecyclerView.setAdapter(adapter);
         final SnapHelper snapHelper = new LinearSnapHelper();
         snapHelper.attachToRecyclerView(subdivisionRecyclerView);
@@ -410,6 +408,8 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
         }
         else if (picker.getId() == R.id.rightTimeSignaturePicker){
             rightTimeSignature = newVal;
+            adapter.setRightTimeSignature(rightTimeSignature);
+            Log.d(TAG, "onValueChange: right : " + rightTimeSignature);
         }
 
     }
