@@ -139,6 +139,7 @@ public class MetronomeService extends Service {
         filter.addAction(PlayPauseBroadcastReceiver.TICK_TOCK_VALUE);
         filter.addAction(PlayPauseBroadcastReceiver.BPM_CHANGE);
         filter.addAction(PlayPauseBroadcastReceiver.TIME_SIGNATURE_CHANGE);
+        filter.addAction(PlayPauseBroadcastReceiver.SUB_DIVISION_CHANGE);
         registerReceiver(playPauseBroadcastReceiver, filter);
 
 
@@ -165,6 +166,8 @@ public class MetronomeService extends Service {
         public static final String BPM_CHANGE = "com.blz.cookietech.BPM_CHANGE";
         public static final String TIME_SIGNATURE_CHANGE = "com.blz.cookietech.TIME_SIGNATURE_CHANGE";
         public static final String TIME_SIGNATURE_VALUE = "time_signature_value";
+        public static final String SUB_DIVISION_CHANGE = "com.blz.cookietech.SUB_DIVISION_CHANGE";
+        public static final String SUB_DIVISION_VALUE = "sub_division_value";
 
 
         @Override
@@ -224,6 +227,10 @@ public class MetronomeService extends Service {
                     case TIME_SIGNATURE_CHANGE:
                         int timeSignature = intent.getIntExtra(TIME_SIGNATURE_VALUE,4);
                         metronomeThread.setTimeSignature(timeSignature);
+                        break;
+                    case SUB_DIVISION_CHANGE:
+                        int subDivision = intent.getIntExtra(SUB_DIVISION_VALUE,1);
+                        metronomeThread.setSubDivision(subDivision);
                         break;
                 }
             }

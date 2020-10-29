@@ -9,11 +9,9 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.blz.cookietech.cookietechmetronomelibrary.R;
-import com.bumptech.glide.Glide;
 
 public class SubdivisionAdapter extends RecyclerView.Adapter<SubdivisionAdapter.SubdivisionViewHolder> {
 
@@ -21,7 +19,7 @@ public class SubdivisionAdapter extends RecyclerView.Adapter<SubdivisionAdapter.
 
     private int recyclerViewHeight;
 
-    private RecyclerView recyclerView;
+    private RecyclerView subDivisionRecyclerView;
     private int rightTimeSignature;
     private Context context;
     private static int icon_count = 1;
@@ -31,8 +29,9 @@ public class SubdivisionAdapter extends RecyclerView.Adapter<SubdivisionAdapter.
 
 
 
-    public SubdivisionAdapter( RecyclerView recyclerView, int rightTimeSignature){
-        this.recyclerView = recyclerView;
+    public SubdivisionAdapter(Context context, RecyclerView recyclerView, int rightTimeSignature){
+        this.context = context;
+        this.subDivisionRecyclerView = recyclerView;
         this.rightTimeSignature = rightTimeSignature;
 
     }
@@ -42,7 +41,7 @@ public class SubdivisionAdapter extends RecyclerView.Adapter<SubdivisionAdapter.
     @Override
     public SubdivisionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.subdivision_item,parent,false);
-        recyclerViewHeight = recyclerView.getHeight();
+        recyclerViewHeight = subDivisionRecyclerView.getHeight();
         return new SubdivisionViewHolder(view,recyclerViewHeight);
     }
 
@@ -50,15 +49,48 @@ public class SubdivisionAdapter extends RecyclerView.Adapter<SubdivisionAdapter.
     public void onBindViewHolder(@NonNull SubdivisionViewHolder holder, int position) {
 
         //holder.rootViewGroup.setMinHeight(recyclerViewHeight/3);
-        int drawableId = drawables[rightTimeSignature-1][position];
-        holder.subdivision_icon.setImageResource(drawableId);
+
+        if(position ==0 || position == 5){
+            holder.subdivision_icon.setImageResource(0);
+        }else{
+            int drawableId = drawables[rightTimeSignature-1][position-1];
+            holder.subdivision_icon.setImageResource(drawableId);
+            holder.rootViewGroup.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d("akash_debug", "onClick: ");
+                    setSelectedItemToMiddle(holder.rootViewGroup);
+                }
+            });
+        }
+
 
 
     }
 
+    private void setSelectedItemToMiddle(View view) {
+        int[] location = new int[2];
+        view.getLocationOnScreen(location);
+        int viewLocation = location[1];
+        int[] subDivisionRecyclerViewLocation = new int[2];
+        subDivisionRecyclerView.getLocationOnScreen(subDivisionRecyclerViewLocation);
+        int recyclerCenterLocation = subDivisionRecyclerViewLocation[1] + (recyclerViewHeight/2);
+        int viewCenter = location[1] + (view.getHeight()/2);
+        int scroll = recyclerCenterLocation - viewCenter;
+
+
+        subDivisionRecyclerView.postOnAnimation(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("akash_debug_test_1", "run: scroll" + scroll);
+                subDivisionRecyclerView.smoothScrollBy(0, -scroll);
+            }
+        });
+    }
+
     @Override
     public int getItemCount() {
-        return 4;
+        return 6;
     }
 
     public class SubdivisionViewHolder extends RecyclerView.ViewHolder{

@@ -261,7 +261,19 @@ public class ChordEraRoundWheeler extends View {
                 return false; // not consumed
         }
 
-        @Override
+         @Override
+         public boolean onSingleTapConfirmed(MotionEvent e) {
+             float x = e.getX() / ((float) getWidth());
+             float y = e.getY() / ((float) getHeight());
+             float mAngleDown = cartesianToPolar(1 - x, 1 - y);// 1- to correct our custom axis direction
+             percent = getPercentFromAngle(mAngleDown);
+             invalidate();
+
+             Log.d("akash_wheeler", "onSingleTapUp: ");
+             return true;
+         }
+
+        /* @Override
         public boolean onSingleTapUp(MotionEvent e) {
 
             float x = e.getX() / ((float) getWidth());
@@ -272,8 +284,13 @@ public class ChordEraRoundWheeler extends View {
 
             Log.d("akash_wheeler", "onSingleTapUp: ");
             return true;
-        }
-    }
+        }*/
+
+         @Override
+         public boolean onDoubleTap(MotionEvent e) {
+             return super.onDoubleTap(e);
+         }
+     }
 
     private int getPercentFromAngle(float mAngleDown) {
         if(mAngleDown > 0){

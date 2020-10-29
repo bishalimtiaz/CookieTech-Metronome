@@ -5,7 +5,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/metronomeColorPrimary">
+    android:clickable="true"
+    android:focusable="true"
+    android:background="@color/metronomeColorPrimaryDark">
 
     <ImageView
         android:id="@+id/subdivision_icon"

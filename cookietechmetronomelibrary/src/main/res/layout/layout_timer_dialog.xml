@@ -40,12 +40,12 @@
             android:text="@string/min"
             android:textColor="@color/white"
             android:textSize="@dimen/_14ssp"
-            app:layout_constraintBottom_toBottomOf="@id/dialogTimeText"
+            app:layout_constraintBottom_toBottomOf="@+id/dialogTimeText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/dialogTimeText"
             app:layout_constraintTop_toTopOf="@+id/dialogTimeText"
-            app:layout_constraintVertical_bias="1.0">
+            app:layout_constraintVertical_bias="0.75">
 
         </TextView>
 

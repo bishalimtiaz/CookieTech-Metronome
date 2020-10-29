@@ -73,7 +73,7 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
     private int leftTimeSignature = 4;
     private int rightTimeSignature = 1;
     private boolean isPlaying = false;
-    private int subdivisionPosition = 0;
+    private int subdivisionPosition = 1;
     private int BPM = 80;
     private boolean isTimerEnabled = false;
     private int minutes =10;
@@ -293,10 +293,11 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
 
         subdivisionRecyclerView.setLayoutManager(layoutManager);
         subdivisionRecyclerView.setHasFixedSize(true);
-        adapter = new SubdivisionAdapter(subdivisionRecyclerView,rightTimeSignature);
+        adapter = new SubdivisionAdapter(requireContext(),subdivisionRecyclerView,rightTimeSignature);
         subdivisionRecyclerView.setAdapter(adapter);
         final SnapHelper snapHelper = new LinearSnapHelper();
         snapHelper.attachToRecyclerView(subdivisionRecyclerView);
+
 
         subdivisionRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
@@ -312,6 +313,9 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
                     int pos = layoutManager.getPosition(centerView);
                     //Log.d(TAG, "onScrollStateChanged: pos : " + pos);
                     subdivisionPosition = pos;
+                    Intent subDivisionChangeIntent = new Intent(MetronomeService.PlayPauseBroadcastReceiver.SUB_DIVISION_CHANGE);
+                    subDivisionChangeIntent.putExtra(MetronomeService.PlayPauseBroadcastReceiver.SUB_DIVISION_VALUE,subdivisionPosition);
+                    requireActivity().sendBroadcast(subDivisionChangeIntent);
                 }
             }
         });

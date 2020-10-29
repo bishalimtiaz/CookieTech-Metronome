@@ -121,6 +121,10 @@ public class Metronome extends HandlerThread {
         beatGenerator.setTimeSignature(timeSignature);
     }
 
+    public void setSubDivision(int subDivision) {
+        beatGenerator.setSubDivision(subDivision);
+    }
+
 
     private class BeatGenerator implements Runnable{
         int bpm = 100;
@@ -128,6 +132,7 @@ public class Metronome extends HandlerThread {
         private int timeSignature = 4;
         private int[] combination = {1};
         private boolean beatSlice = false;
+        private int subDivision =1;
 
         public void setPlaying(boolean playing) {
             this.playing = playing;
@@ -149,7 +154,7 @@ public class Metronome extends HandlerThread {
             do{
                 Log.d("akash_debug", "run: ");
 
-                int beatSlice = calcBeatSlice(combination.length);
+                int beatSlice = calcBeatSlice(subDivision);
                 Log.d("akash_debug", "run: " + beatSlice );
                 byte[] sample = new byte[beatSlice];
                 if(timeSignaturePointer == 1){
@@ -177,6 +182,10 @@ public class Metronome extends HandlerThread {
 
         public void setTimeSignature(int timeSignature) {
             this.timeSignature = timeSignature;
+        }
+
+        public void setSubDivision(int subDivision) {
+            this.subDivision = subDivision;
         }
     }
 }
