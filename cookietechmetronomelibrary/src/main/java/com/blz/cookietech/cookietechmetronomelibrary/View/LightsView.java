@@ -19,9 +19,7 @@ public class LightsView extends View {
     private Paint lightOffPaint,lightOnPaint;
     private int lightNumber;
     private int radius;
-    int distanceBtnTwoCenter;
-
-
+    private int distanceBtnTwoCenter;
     public LightsView(Context context) {
         super(context);
     }
@@ -56,7 +54,7 @@ public class LightsView extends View {
                 lightOffPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
                 lightOffPaint.setColor(Color.parseColor("#132334")); //OFF color;
                 lightOnPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-                lightOffPaint.setColor(Color.parseColor("#3495FF")); //ON color;
+                lightOnPaint.setColor(Color.parseColor("#3495FF")); //ON color;
 
                 //lightPaint.stroke
                 return true;
@@ -108,4 +106,5 @@ public class LightsView extends View {
         invalidate();
 
     }
+
 }

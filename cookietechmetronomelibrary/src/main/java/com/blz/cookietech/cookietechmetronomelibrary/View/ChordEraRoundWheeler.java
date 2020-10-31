@@ -1,5 +1,8 @@
 package com.blz.cookietech.cookietechmetronomelibrary.View;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -15,40 +18,50 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.animation.OvershootInterpolator;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 
+import com.blz.cookietech.Helpers.Constants;
 import com.blz.cookietech.Listener.BPMListener;
 import com.blz.cookietech.cookietechmetronomelibrary.R;
+
+import java.util.concurrent.RecursiveAction;
 
 public class ChordEraRoundWheeler extends View {
 
     private static final String TAG = "bishal_wheeler";
+    private int BPM;
     Drawable wheeler;
     GestureDetector gestureDetector;
     private float angle = (float) 0.0;
-    int width;
-    int height;
-    float percent;
-    int wheelerSize = 0;
-    int wheelerPadding = 0;
-    int bpmTextSize;
-    Paint bpmTextColor;
+    private int width;
+    private int height;
+    private float percent;
+    private int wheelerSize = 0;
+    private int wheelerPadding = 0;
+    private int bpmTextSize;
+    private Paint bpmTextColor;
 
-    Drawable  outerRing;
-    Drawable wave;
+    private Drawable  outerRing;
+    private Drawable wave;
     private int waveSize;
     private int middlePointX;
     private int middlePointY;
     private float bpmValueTextSize;
     private Paint bpmValueTextColor;
-    Rect bpmValueTextBound,bpmTextBound,waveBound;
+    private Rect bpmValueTextBound,bpmTextBound,waveBound;
     private Paint outerRingProgressPaint;
 
     final RectF oval = new RectF();
 
     private BPMListener bpmListener;
+
+    /** Increment Decrement BPM section **/
+    private Paint inc_dec_paint;
+    private String inc_dec_text = "";
+    private ValueAnimator animator;
 
 
 
@@ -65,6 +78,35 @@ public class ChordEraRoundWheeler extends View {
         gestureDetector = new GestureDetector(context,new WheelerGestureListener());
         wheeler = getResources().getDrawable(R.drawable.metronome_controller);
         wave  = getResources().getDrawable(R.drawable.ic_wave);
+
+        animator = ValueAnimator.ofInt(255,0);
+        animator.setDuration(1000); // 1000 ms
+
+        // Callback that executes on animation steps.
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                int value = (int) animation.getAnimatedValue();
+
+                Log.d("ValueAnimator", "value=" + value);
+
+                // Here you can now translate or redraw your view
+                // You need to map 'value' to your animation in regards to time
+                // eg) mDigitY = value; invalidate();
+                inc_dec_paint.setAlpha(value);
+                invalidate();
+            }
+        });
+
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+               inc_dec_text = "";
+               invalidate();
+            }
+        });
+
+
 
         getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -109,15 +151,20 @@ public class ChordEraRoundWheeler extends View {
                 wave.setBounds(0,0,waveSize,waveSize);
 
                 bpmTextSize = width/12;
-                bpmTextColor = new Paint();
+                bpmTextColor = new Paint(Paint.ANTI_ALIAS_FLAG);
                 bpmTextColor.setColor(Color.WHITE);
                 bpmTextColor.setTextSize(bpmTextSize);
 
 
-                outerRingProgressPaint = new Paint();
-                outerRingProgressPaint.setStrokeWidth(width/20);
+                outerRingProgressPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+                outerRingProgressPaint.setStrokeWidth(width/20f);
                 outerRingProgressPaint.setStyle(Paint.Style.STROKE);
                 outerRingProgressPaint.setShader(new LinearGradient(0, 0, 0, getHeight(), Color.parseColor("#0072BC"), Color.parseColor("#00D49A"), Shader.TileMode.CLAMP));
+
+                /** increment decrement section **/
+                inc_dec_paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+                inc_dec_paint.setTextSize(bpmTextSize);
+                //inc_dec_paint.setAlpha(0);
 
             }
         });
@@ -140,7 +187,7 @@ public class ChordEraRoundWheeler extends View {
 
 
 
-        if (bpmValueTextColor != null && bpmTextColor != null && outerRingProgressPaint != null){
+        if (bpmValueTextColor != null && bpmTextColor != null && outerRingProgressPaint != null && inc_dec_paint != null){
             Log.d("akash_wheeler", "onDraw: ");
             canvas.save();
             Log.d(TAG, "onDraw: percent : " + percent);
@@ -198,6 +245,14 @@ public class ChordEraRoundWheeler extends View {
                     middlePointX + radius,
                     middlePointY + radius);
             canvas.drawArc(oval, -90, angle, false, outerRingProgressPaint);
+
+            /** increment decrement section **/
+
+            //inc_dec_paint.getTextBounds(inc_dec_text,0,inc_dec_text.length(),inc_dec_text_bound);
+            float inc_dec_text_width = inc_dec_paint.measureText(inc_dec_text);
+            int inc_dec_PositionX = (int) (middlePointX - inc_dec_text_width /2);
+            int inc_dec_PositionY = (int) (middlePointY + bpmValueTextHeight + height/10);
+            canvas.drawText(inc_dec_text,inc_dec_PositionX,inc_dec_PositionY,inc_dec_paint);
         }
     }
 
@@ -255,13 +310,14 @@ public class ChordEraRoundWheeler extends View {
                 bpmListener.onBPMChange(percentToBpm(percent));
                 
                 invalidate();
+                BPM = percentToBpm(percent);
                 prevAngle = posDegrees;
                 return true; //consumed
             } else
                 return false; // not consumed
         }
 
-        @Override
+       /* @Override
         public boolean onSingleTapUp(MotionEvent e) {
 
             float x = e.getX() / ((float) getWidth());
@@ -272,8 +328,31 @@ public class ChordEraRoundWheeler extends View {
 
             Log.d("akash_wheeler", "onSingleTapUp: ");
             return true;
-        }
-    }
+        }*/
+
+         @Override
+         public boolean onDoubleTap(MotionEvent e) {
+            float touchedX = e.getX();
+            if (touchedX > middlePointX){
+                if (BPM != 400){
+                    inc_dec_text = Constants.plus_five;
+                    incrementDecrementBPM(BPM + 5);
+                    inc_dec_paint.setColor(Color.parseColor("#00D49A"));
+                }
+            }
+            else {
+                if (BPM != 20){
+                    inc_dec_text = Constants.minus_five;
+                    incrementDecrementBPM(BPM - 5);
+                    inc_dec_paint.setColor(Color.parseColor("#ff5252"));
+                }
+            }
+             //animator.start();
+
+
+             return true;
+         }
+     }
 
     private int getPercentFromAngle(float mAngleDown) {
         if(mAngleDown > 0){
@@ -297,6 +376,32 @@ public class ChordEraRoundWheeler extends View {
 
     }
 
+    private void incrementDecrementBPM(int bpm){
+
+        if (bpm<20){
+            bpm = 20;
+        }
+        else if (bpm>400){
+            bpm = 400;
+        }
+
+        percent = BPMToPercent(bpm);
+        BPM = bpm;
+        animator.start();
+
+
+
+
+        bpmListener.onBPMChange(BPM);
+
+
+    }
+
+
+    /*private void decrementBPM(int bpm){
+
+    }*/
+
 
 
 
@@ -306,8 +411,16 @@ public class ChordEraRoundWheeler extends View {
 
     public void setBPM(int BPM){
 
+        if (BPM<20){
+            BPM = 20;
+        }
+        else if (BPM>400){
+            BPM = 400;
+        }
+
         percent = BPMToPercent(BPM);
         invalidate();
+        this.BPM = BPM;
 
     }
     private float BPMToPercent(int BPM){
