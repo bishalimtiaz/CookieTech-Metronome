@@ -39,6 +39,9 @@ public class MetronomeService extends Service {
     public static final String TOCK_VALUE = "tock_value";
 
     public static final String CHANNEL_ID = "metronomeServiceChannel";
+    public static final String INITIAL_BPM = "initial_bpm";
+    public static final String INITIAL_SUBDIVISION = "initial_subdivision";
+    public static final String INITIAL_TIME_SIGNATURE = "initial_time_signature";
 
     private static final String TAG = "MetronomeService";
 
@@ -99,8 +102,12 @@ public class MetronomeService extends Service {
         PendingIntent pendingIntent = intent.getParcelableExtra(PENDING_INTENT);
         tick = (double[]) intent.getExtras().getSerializable(TICK_VALUE);
         tock = (double[]) intent.getExtras().getSerializable(TOCK_VALUE);
+        int bpm = intent.getIntExtra(INITIAL_BPM,80);
+        int subdivision = intent.getIntExtra(INITIAL_SUBDIVISION,1);
+        int timeSignature = intent.getIntExtra(INITIAL_TIME_SIGNATURE,4);
 
-        metronomeThread = new Metronome(tick,tock);
+        metronomeThread = new Metronome(tick,tock,bpm,subdivision,timeSignature);
+
 
         Log.d("akash_debug", "onStartCommand: " + tick[500] + " " + tock[500]);
 

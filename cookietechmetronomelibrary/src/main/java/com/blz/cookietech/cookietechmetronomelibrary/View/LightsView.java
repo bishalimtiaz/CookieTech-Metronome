@@ -4,12 +4,15 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
 import androidx.annotation.Nullable;
+
+import java.util.logging.Handler;
 
 public class LightsView extends View {
 
@@ -20,9 +23,15 @@ public class LightsView extends View {
     private int lightNumber;
     private int radius;
     private int distanceBtnTwoCenter;
+    private boolean isToggling = false;
+
+    private int bpm = 80;
+    private int subdivision = 1;
+
     public LightsView(Context context) {
         super(context);
     }
+    private int lightPointer = 0;
 
     public LightsView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -77,6 +86,17 @@ public class LightsView extends View {
         Log.d(TAG, "onDraw: called");
         drawLight(canvas);
 
+        if(lightPointer != 0){
+            turnOnLight(canvas);
+        }
+
+    }
+
+    private void turnOnLight(Canvas canvas) {
+        if(lightOnPaint != null){
+            canvas.drawCircle(distanceBtnTwoCenter*lightPointer, getMiddlePointY, radius, lightOnPaint);
+        }
+
     }
 
     private void drawLight(Canvas canvas) {
@@ -86,6 +106,17 @@ public class LightsView extends View {
                canvas.drawCircle(distanceBtnTwoCenter*i, getMiddlePointY, radius, lightOffPaint);
            }
         }
+    }
+
+    public void toggleLight(){
+        if(lightPointer < lightNumber){
+            lightPointer++;
+            invalidate();
+        }else{
+            lightPointer = 1;
+            invalidate();
+        }
+
     }
 
    /* private void setLightOn(Canvas canvas) {
@@ -107,4 +138,34 @@ public class LightsView extends View {
 
     }
 
+    public void startToggling() {
+        isToggling = true;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (isToggling){
+                    LightsView.this.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            toggleLight();
+                        }
+                    });
+                    long sleepTime = (60000/(bpm*subdivision));
+                    SystemClock.sleep(sleepTime);
+                }
+
+            }
+        }).start();
+    }
+
+    public void stopToggling() {
+        isToggling = false;
+        lightPointer = 0;
+        invalidate();
+    }
+
+
+    public void setBpm(int bpm) {
+        this.bpm = bpm;
+    }
 }

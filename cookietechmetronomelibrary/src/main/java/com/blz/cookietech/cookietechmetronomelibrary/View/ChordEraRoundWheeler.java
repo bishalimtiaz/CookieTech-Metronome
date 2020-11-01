@@ -323,6 +323,7 @@ public class ChordEraRoundWheeler extends View {
              float y = e.getY() / ((float) getHeight());
              float mAngleDown = cartesianToPolar(1 - x, 1 - y);// 1- to correct our custom axis direction
              percent = getPercentFromAngle(mAngleDown);
+             bpmListener.onBPMChange(percentToBpm(percent));
              invalidate();
 
              Log.d("akash_wheeler", "onSingleTapUp: ");

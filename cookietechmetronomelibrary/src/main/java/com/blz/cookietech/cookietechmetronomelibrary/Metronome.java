@@ -28,10 +28,13 @@ public class Metronome extends HandlerThread {
 
     BeatGenerator beatGenerator = new BeatGenerator();
 
-    public Metronome(double[] tick,double[] tock) {
+    public Metronome(double[] tick, double[] tock, int bpm, int subdivision, int timeSignature) {
         super(NAME, Process.THREAD_PRIORITY_FOREGROUND);
         this.tick = tick;
         this.tock = tock;
+        beatGenerator.setBpm(bpm);
+        beatGenerator.setSubDivision(subdivision);
+        beatGenerator.setTimeSignature(timeSignature);
     }
 
 

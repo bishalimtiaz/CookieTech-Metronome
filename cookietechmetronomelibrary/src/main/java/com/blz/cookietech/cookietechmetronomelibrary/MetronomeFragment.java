@@ -172,6 +172,13 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
             }
         });
 
+        timerWheel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                lightsView.toggleLight();
+            }
+        });
+
 
 
         /** Time Signature Picker Section**/
@@ -202,6 +209,9 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
         Bundle mBundle = new Bundle();
         mBundle.putSerializable(MetronomeService.TICK_VALUE,  tick);
         mBundle.putSerializable(MetronomeService.TOCK_VALUE,  tock);
+        mBundle.putInt(MetronomeService.INITIAL_BPM,BPM);
+        mBundle.putInt(MetronomeService.INITIAL_SUBDIVISION,subdivisionPosition);
+        mBundle.putInt(MetronomeService.INITIAL_TIME_SIGNATURE,leftTimeSignature);
         service.putExtras(mBundle);
         requireActivity().startService(service);
 
@@ -342,6 +352,8 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
                     play_pause_icon.setImageResource(R.drawable.ic_pause);
                     timerWheel.startTimer();
 
+                    lightsView.startToggling();
+
                 }
                 else{
 
@@ -350,6 +362,7 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
                     requireActivity().sendBroadcast(playPauseIntent);
                     resetPlayPauseBtn();
                     timerWheel.stopTimer();
+                    lightsView.stopToggling();
                 }
 
             }
@@ -379,7 +392,7 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
         bpmChangeIntent.putExtra(MetronomeService.PlayPauseBroadcastReceiver.BPM_VALUE,bpm);
         requireActivity().sendBroadcast(bpmChangeIntent);
         Log.d("akash_debug", String.valueOf(bpm));
-
+        lightsView.setBpm(BPM);
     }
 
     @Override
