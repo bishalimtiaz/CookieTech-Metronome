@@ -21,12 +21,13 @@ public class LightsView extends View {
     private int height,width,middlePointX,getMiddlePointY;
     private Paint lightOffPaint,lightOnPaint;
     private int lightNumber;
-    private int radius;
-    private int distanceBtnTwoCenter;
+    private float radius;
+    private float distanceBtnTwoCenter;
     private boolean isToggling = false;
 
     private int bpm = 80;
     private int subdivision = 1;
+    private long togglingDelay = 0;
 
     public LightsView(Context context) {
         super(context);
@@ -43,14 +44,14 @@ public class LightsView extends View {
                 height = getHeight();
                 middlePointX = width/2;
                 getMiddlePointY = height/2;
-                int radiusX,radiusY;
-                radiusY = height/5; // circle height will be 40% off parent. 40%/2 = radiusY
+                float radiusX,radiusY;
+                radiusY = (float) (height * 0.1); // circle height will be 40% off parent. 40%/2 = radiusY
 
                 Log.d(TAG, "onGlobalLayout: width : " + width);
                 Log.d(TAG, "onGlobalLayout: height : " + height);
                 Log.d(TAG, "onGlobalLayout: lightNumber : " + lightNumber);
 
-                distanceBtnTwoCenter = width/(lightNumber + 1);
+                distanceBtnTwoCenter = (float) width/(lightNumber + 1);
                 radiusX = (distanceBtnTwoCenter/2) - (distanceBtnTwoCenter/10);
 
                 radius = Math.min(radiusX,radiusY);
@@ -61,8 +62,12 @@ public class LightsView extends View {
 
 
                 lightOffPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-                lightOffPaint.setColor(Color.parseColor("#132334")); //OFF color;
+                lightOffPaint.setStyle(Paint.Style.STROKE);
+                lightOffPaint.setStrokeWidth(2);
+                lightOffPaint.setColor(Color.parseColor("#80848484")); //OFF color;
                 lightOnPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+                lightOnPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+                lightOnPaint.setStrokeWidth(2);
                 lightOnPaint.setColor(Color.parseColor("#3495FF")); //ON color;
 
                 //lightPaint.stroke
@@ -82,80 +87,57 @@ public class LightsView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
+        //super.onDraw(canvas);
         Log.d(TAG, "onDraw: called");
         drawLight(canvas);
 
-        if(lightPointer != 0){
-            turnOnLight(canvas);
+        if(isToggling){
+            toggleLight();
+            postInvalidateDelayed(togglingDelay);
         }
 
     }
 
-    private void turnOnLight(Canvas canvas) {
-        if(lightOnPaint != null){
-            canvas.drawCircle(distanceBtnTwoCenter*lightPointer, getMiddlePointY, radius, lightOnPaint);
-        }
-
-    }
 
     private void drawLight(Canvas canvas) {
         if (lightOffPaint != null){
            for(int i = 1;i <= lightNumber;i++){
 
-               canvas.drawCircle(distanceBtnTwoCenter*i, getMiddlePointY, radius, lightOffPaint);
+               if(lightPointer == i){
+                   canvas.drawCircle(distanceBtnTwoCenter*i, getMiddlePointY, radius, lightOnPaint);
+               }else {
+                   canvas.drawCircle(distanceBtnTwoCenter*i, getMiddlePointY, radius, lightOffPaint);
+               }
+
+
            }
         }
     }
 
     public void toggleLight(){
         if(lightPointer < lightNumber){
+
             lightPointer++;
-            invalidate();
         }else{
             lightPointer = 1;
+        }
+
+    }
+
+
+    public void setLightNumber(int lightNumber){
+
+        this.lightNumber = lightNumber;
+        if(!isToggling){
             invalidate();
         }
 
     }
 
-   /* private void setLightOn(Canvas canvas) {
-        lightOffPaint.reset();
-        lightOffPaint.setColor(Color.parseColor("#3495FF"));
-        invalidate();
-    }
-
-    private void setLightOff(Canvas canvas) {
-        lightOffPaint.reset();
-        lightOffPaint.setColor(Color.parseColor("#132334"));
-        invalidate();
-    }*/
-
-    public void setLightNumber(int lightNumber){
-
-        this.lightNumber = lightNumber;
-        invalidate();
-
-    }
-
     public void startToggling() {
         isToggling = true;
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (isToggling){
-                    LightsView.this.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            toggleLight();
-                        }
-                    });
-                    long sleepTime = (60000/(bpm*subdivision));
-                    SystemClock.sleep(sleepTime);
-                }
-
-            }
-        }).start();
+        toggleLight();
+        invalidate();
     }
 
     public void stopToggling() {
@@ -167,5 +149,6 @@ public class LightsView extends View {
 
     public void setBpm(int bpm) {
         this.bpm = bpm;
+        togglingDelay = (60000/(bpm));
     }
 }

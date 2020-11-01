@@ -103,6 +103,7 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
     private SubdivisionAdapter adapter;
 
 
+
     public MetronomeFragment(PendingIntent pendingIntent,double[] tick,double[] tock) {
         this.tick = tick;
         this.tock = tock;
@@ -156,6 +157,8 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
 
         /** Initialize wheelerContainer **/
         wheelerContainer = view.findViewById(R.id.wheelerContainer);
+
+        lightsView.setBpm(BPM);
 
 
 
