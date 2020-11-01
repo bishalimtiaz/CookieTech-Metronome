@@ -163,7 +163,7 @@ public class Metronome extends HandlerThread {
                     System.arraycopy(tockByte, 0, sample, 0, Math.min(beatSlice, tockByte.length));
                 }
 
-                if(timeSignaturePointer >= timeSignature*combination.length){
+                if(timeSignaturePointer >= timeSignature*subDivision){
                     timeSignaturePointer = 1;
                 }else{
                     timeSignaturePointer++;
