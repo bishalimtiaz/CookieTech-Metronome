@@ -37,6 +37,7 @@ public class LightsView extends View {
     public LightsView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
+
         getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
@@ -71,11 +72,15 @@ public class LightsView extends View {
                 lightOnPaint.setColor(Color.parseColor("#3495FF")); //ON color;
 
                 //lightPaint.stroke
+                getViewTreeObserver().removeOnPreDrawListener(this);
                 return true;
+
             }
         });
 
     }
+
+
 
     public LightsView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
@@ -87,13 +92,16 @@ public class LightsView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        //super.onDraw(canvas);
         Log.d(TAG, "onDraw: called");
+        long drawStart = SystemClock.currentThreadTimeMillis();
         drawLight(canvas);
+        long drawEnd = SystemClock.currentThreadTimeMillis();
+
+        long timeLoss = drawEnd - drawStart;
 
         if(isToggling){
             toggleLight();
-            postInvalidateDelayed(togglingDelay);
+            postInvalidateDelayed(togglingDelay - timeLoss);
         }
 
     }
@@ -128,6 +136,18 @@ public class LightsView extends View {
     public void setLightNumber(int lightNumber){
 
         this.lightNumber = lightNumber;
+        float radiusX,radiusY;
+        radiusY = (float) (height * 0.1); // circle height will be 40% off parent. 40%/2 = radiusY
+
+        Log.d(TAG, "onGlobalLayout: width : " + width);
+        Log.d(TAG, "onGlobalLayout: height : " + height);
+        Log.d(TAG, "onGlobalLayout: lightNumber : " + lightNumber);
+
+        distanceBtnTwoCenter = (float) width/(lightNumber + 1);
+        radiusX = (distanceBtnTwoCenter/2) - (distanceBtnTwoCenter/10);
+
+        radius = Math.min(radiusX,radiusY);
+
         if(!isToggling){
             invalidate();
         }
