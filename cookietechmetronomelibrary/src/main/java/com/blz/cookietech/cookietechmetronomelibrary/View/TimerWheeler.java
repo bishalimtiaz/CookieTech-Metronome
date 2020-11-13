@@ -57,7 +57,7 @@ public class TimerWheeler extends View {
     private CountDownTimer timer;
     private boolean isTimerRunning = false;
     private boolean isTimerSet;
-    private float percent;
+    private float percent = 0;
 
     private StopTimerListener stopTimerListener;
 
@@ -140,7 +140,7 @@ public class TimerWheeler extends View {
         if (timerValueTextColor != null && timerTextColor != null && outerRingProgressPaint != null){
             Log.d(TAG, "onDraw: ");
             canvas.save();
-            Log.d("akash_wheeler", "onDraw: ");
+            Log.d("akash_wheeler", "onDraw: " + percent + " " + getAngleFromPercent(percent));
             canvas.save();
             angle = getAngleFromPercent(percent);
             canvas.rotate(angle,(float)width/2,(float)height/2);
@@ -215,7 +215,12 @@ public class TimerWheeler extends View {
         int minutes = (int) (TIME_LEFT_IN_MILLS/Constants.ONE_SECOND) / 60;
         int seconds = (int) (TIME_LEFT_IN_MILLS/Constants.ONE_SECOND) % 60;
         timerValue = String.format(Locale.getDefault(),"%02d : %02d",minutes,seconds);
-        percent = (float) TIME_LEFT_IN_MILLS/TIME_IN_MILLS * 100;
+        if(TIME_IN_MILLS > 0){
+            percent = (float) TIME_LEFT_IN_MILLS/TIME_IN_MILLS * 100;
+        }else{
+            percent = 0;
+        }
+
         Log.d(TAG, "updateTimerView: percent : " + percent);
 
         invalidate();

@@ -60,8 +60,8 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
     private ChordEraRoundWheeler bpmWheel;
 
     private ServiceConnection serviceConnection;
-    private CardView play_pause_btn;
-    private ImageView play_pause_icon;
+    private ImageView play_pause_btn;
+
 
     private AudioGenerator audio;
 
@@ -132,7 +132,6 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
 
         /** Initialize play pause button **/
         play_pause_btn = view.findViewById(R.id.play_pause_btn);
-        play_pause_icon = view.findViewById(R.id.play_pause_icon);
 
         /** Initialize Time Signature Picker **/
         leftTimeSignaturePicker  = view.findViewById(R.id.leftTimeSignaturePicker);
@@ -284,8 +283,8 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
                     int mainMiddle = leftRightPadding/2 + bpmWheelSize + marginFromOtherWheeler;
                     int buttonMiddle = play_pause_btn.getLeft() + (play_pause_btn.getWidth()/2);
 
-                    play_pause_btn.setTranslationX(mainMiddle-buttonMiddle);
-
+                    play_pause_btn.setTranslationX((float) (mainMiddle-buttonMiddle+ (play_pause_btn.getWidth()*0.04)));
+                    play_pause_btn.setTranslationY((float) (play_pause_btn.getWidth()*0.05));
 
 
 
@@ -352,7 +351,7 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
                     playPauseIntent.putExtra(MetronomeService.PlayPauseBroadcastReceiver.PLAY_PAUSE_EXTRA,true);
                     requireActivity().sendBroadcast(playPauseIntent);
                     isPlaying = true;
-                    play_pause_icon.setImageResource(R.drawable.ic_pause);
+                    play_pause_btn.setImageResource(R.drawable.pause);
                     timerWheel.startTimer();
 
                     lightsView.startToggling();
@@ -385,7 +384,7 @@ public class MetronomeFragment extends Fragment implements BPMListener, StopTime
 
     private void resetPlayPauseBtn() {
         isPlaying = false;
-        play_pause_icon.setImageResource(R.drawable.ic_play);
+        play_pause_btn.setImageResource(R.drawable.play);
     }
 
     @Override

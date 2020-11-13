@@ -28,9 +28,9 @@
                 android:id="@+id/back_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_24sdp"
+                android:layout_marginStart="@dimen/_18sdp"
                 android:contentDescription="@string/todo"
-                android:src="@drawable/ic_arrow_back"
+                android:src="@mipmap/arrow_back"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -40,10 +40,11 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_8sdp"
                 android:text="@string/metronome"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_16ssp"
+                android:fontFamily="@font/cairo_bold"
+                android:layout_marginStart="@dimen/_18sdp"
                 app:layout_constraintBottom_toBottomOf="@+id/back_btn"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -82,26 +83,16 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-    <androidx.cardview.widget.CardView
+    <ImageView
         android:id="@+id/play_pause_btn"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="5dp"
-        app:cardCornerRadius="30dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/todo"
+        android:scaleType="fitCenter"
+        android:src="@drawable/play"
+        app:layout_constraintBottom_toBottomOf="@+id/wheelerContainer"
         app:layout_constraintStart_toStartOf="@+id/leftGuideline"
-        app:layout_constraintTop_toBottomOf="@+id/wheelerContainer">
-
-        <ImageView
-            android:id="@+id/play_pause_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:contentDescription="@string/todo"
-            android:src="@drawable/ic_play">
-
-        </ImageView>
-
-    </androidx.cardview.widget.CardView>
+        app:layout_constraintTop_toBottomOf="@+id/wheelerContainer" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/lightGuideLine"
@@ -121,7 +112,7 @@
         android:id="@+id/subdivisionContainer"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="@dimen/_20sdp"
         app:layout_constraintBottom_toTopOf="@+id/subdivisionGuideline"
         app:layout_constraintEnd_toStartOf="@+id/rightGuideline"
         app:layout_constraintStart_toStartOf="@+id/leftGuideline"
@@ -134,6 +125,8 @@
             android:layout_height="wrap_content"
             android:text="@string/subdivision"
             android:textColor="@color/white"
+            android:fontFamily="@font/cairo_extra_light"
+            android:textSize="@dimen/_15ssp"
             app:layout_constraintEnd_toEndOf="@+id/subdivisionRecyclerView"
             app:layout_constraintStart_toStartOf="@+id/subdivisionRecyclerView"
             app:layout_constraintTop_toTopOf="parent">
@@ -146,7 +139,8 @@
             android:layout_height="wrap_content"
             android:text="@string/time_signature"
             android:textColor="@color/white"
-            android:textSize="@dimen/_12ssp"
+            android:textSize="@dimen/_15ssp"
+            android:fontFamily="@font/cairo_extra_light"
             app:layout_constraintEnd_toEndOf="@+id/rightTimeSignaturePicker"
             app:layout_constraintStart_toStartOf="@+id/leftTimeSignaturePicker"
             app:layout_constraintTop_toTopOf="parent">
@@ -294,7 +288,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.07" />
+        app:layout_constraintGuide_begin="50dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

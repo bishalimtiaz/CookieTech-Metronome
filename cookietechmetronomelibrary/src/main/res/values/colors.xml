@@ -10,5 +10,6 @@
     <color name="subdivision_top">#9915273B</color>
     <color name="subdivision_center">#00000000</color>
     <color name="subdivision_bottom">#9915273B</color>
+    <color name="shadow">#3495FF</color>
 
 </resources>

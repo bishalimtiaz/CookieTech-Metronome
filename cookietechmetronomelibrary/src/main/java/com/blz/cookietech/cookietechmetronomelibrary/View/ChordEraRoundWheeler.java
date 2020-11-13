@@ -18,16 +18,12 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.animation.OvershootInterpolator;
-
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.blz.cookietech.Helpers.Constants;
 import com.blz.cookietech.Listener.BPMListener;
 import com.blz.cookietech.cookietechmetronomelibrary.R;
-
-import java.util.concurrent.RecursiveAction;
 
 public class ChordEraRoundWheeler extends View {
 
@@ -76,8 +72,9 @@ public class ChordEraRoundWheeler extends View {
     public ChordEraRoundWheeler(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         gestureDetector = new GestureDetector(context,new WheelerGestureListener());
-        wheeler = getResources().getDrawable(R.drawable.metronome_controller);
-        wave  = getResources().getDrawable(R.drawable.ic_wave);
+        wheeler = ResourcesCompat.getDrawable(getResources(),R.drawable.metronome_controller,null);
+        wave  = ResourcesCompat.getDrawable(getResources(),R.drawable.ic_wave,null);
+        outerRing = ResourcesCompat.getDrawable(getResources(),R.drawable.wheeler_progress,null);
 
         animator = ValueAnimator.ofInt(255,0);
         animator.setDuration(1000); // 1000 ms
@@ -123,15 +120,11 @@ public class ChordEraRoundWheeler extends View {
                 middlePointX = width/2;
                 middlePointY = height/2;
 
-
-                wheeler = ResourcesCompat.getDrawable(getResources(),R.drawable.metronome_controller,null);
-                wave  = ResourcesCompat.getDrawable(getResources(),R.drawable.ic_wave,null);
                 wheelerPadding = width/10;
                 Log.d("akash_wheeler", "onGlobalLayout: "+wheelerPadding);
                 wheelerSize = width - wheelerPadding;
 
                 wheeler.setBounds(wheelerPadding,wheelerPadding,wheelerSize,wheelerSize);
-                outerRing = ResourcesCompat.getDrawable(getResources(),R.drawable.wheeler_progress,null);
                 outerRing.setBounds(0,0,width,height);
 
                 bpmValueTextSize = (float) width/5;
@@ -160,6 +153,7 @@ public class ChordEraRoundWheeler extends View {
                 outerRingProgressPaint.setStrokeWidth(width/20f);
                 outerRingProgressPaint.setStyle(Paint.Style.STROKE);
                 outerRingProgressPaint.setShader(new LinearGradient(0, 0, 0, getHeight(), Color.parseColor("#0072BC"), Color.parseColor("#00D49A"), Shader.TileMode.CLAMP));
+                outerRingProgressPaint.setStrokeCap(Paint.Cap.ROUND);
 
                 /** increment decrement section **/
                 inc_dec_paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -215,8 +209,8 @@ public class ChordEraRoundWheeler extends View {
             canvas.drawText("BPM",bpmPositionX,bpmPositionY,bpmTextColor);
 
 
-            waveBound.left = bpmPositionX - waveSize - 20;
-            waveBound.right = bpmPositionX - 20;
+            waveBound.left = bpmPositionX - waveSize - 10;
+            waveBound.right = bpmPositionX - 10;
             waveBound.top = bpmPositionY - waveSize;
             waveBound.bottom = waveBound.top+waveSize;
             wave.setBounds(waveBound);
@@ -324,8 +318,8 @@ public class ChordEraRoundWheeler extends View {
              float mAngleDown = cartesianToPolar(1 - x, 1 - y);// 1- to correct our custom axis direction
              percent = getPercentFromAngle(mAngleDown);
              bpmListener.onBPMChange(percentToBpm(percent));
+             BPM = percentToBpm(percent);
              invalidate();
-
              Log.d("akash_wheeler", "onSingleTapUp: ");
              return true;
          }
