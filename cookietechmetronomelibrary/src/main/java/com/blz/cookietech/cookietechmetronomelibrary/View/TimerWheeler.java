@@ -107,6 +107,7 @@ public class TimerWheeler extends View {
                 timerValueTextColor = new Paint();
                 timerValueTextColor.setColor(Color.WHITE);
                 timerValueTextColor.setTextSize(timerValueTextSize);
+                timerValueTextColor.setAlpha(50);
 
 
                 timerValueTextBound = new Rect();
@@ -117,6 +118,7 @@ public class TimerWheeler extends View {
                 outerRingProgressPaint.setStrokeWidth(width/20);
                 outerRingProgressPaint.setStyle(Paint.Style.STROKE);
                 outerRingProgressPaint.setShader(new LinearGradient(0, 0, 0, getHeight(), Color.parseColor("#0072BC"), Color.parseColor("#00D49A"), Shader.TileMode.CLAMP));
+                outerRingProgressPaint.setStrokeCap(Paint.Cap.ROUND);
 
 
             }
@@ -217,8 +219,13 @@ public class TimerWheeler extends View {
         timerValue = String.format(Locale.getDefault(),"%02d : %02d",minutes,seconds);
         if(TIME_IN_MILLS > 0){
             percent = (float) TIME_LEFT_IN_MILLS/TIME_IN_MILLS * 100;
+            timerValueTextColor.setAlpha(255);
         }else{
             percent = 0;
+            if (timerValueTextColor != null){
+                timerValueTextColor.setAlpha(50);
+            }
+
         }
 
         Log.d(TAG, "updateTimerView: percent : " + percent);
